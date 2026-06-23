@@ -488,7 +488,7 @@ const LANG = {
         tuner: "Tuner",
         pitch: "Pitch Detection",
         piano: "Pianoshock 2",
-        score: "Music Score",
+        score: "Disabled",
         noise: "Noise Meter",
         settings: "Settings",
 
