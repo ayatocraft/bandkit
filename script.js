@@ -198,14 +198,16 @@ function metronomeLoop(now) {
             metroBeat++;
 
             if (
-                metroBeat >
-                maxBeat
-            ) {
+    metroBeat >
+    maxBeat
+) {
 
-                metroBeat = 1;
-                metroMeasure++;
+    metroBeat = 1;
+    metroMeasure++;
 
-            }
+    checkProgrammedMetronome();
+
+}
 
         }
 
@@ -285,6 +287,9 @@ function updateMetronomeUI(
         if (beatView)
             beatView.style.display =
                 "none";
+				checkProgrammedMetronome();
+
+updateProgrammedFloat();
 
     }
 
@@ -472,7 +477,7 @@ const LANG = {
         tuner: "チューナー",
         pitch: "音検知",
         piano: "Pianoshock 2",
-        score: "ご利用できません",
+        score: "プログラムされたメトロノーム(ベータ)",
         noise: "騒音計",
         settings: "設定",
 
@@ -488,7 +493,7 @@ const LANG = {
         tuner: "Tuner",
         pitch: "Pitch Detection",
         piano: "Pianoshock 2",
-        score: "Unavailable",
+        score: "Programmed Metronome(Beta)",
         noise: "Noise Meter",
         settings: "Settings",
 
@@ -1333,3 +1338,262 @@ window.addEventListener("DOMContentLoaded", () => {
         ?.addEventListener("click", startNoise);
 
 });
+/* ==================================
+   Programmed Metronome
+================================== */
+
+let programmedData = [];
+let programmedEnabled = false;
+
+let currentStep = 0;
+let currentStepStartMeasure = 1;
+
+/* ==================================
+   LOAD
+================================== */
+
+function loadProgrammedMetronome() {
+
+    const saved =
+        localStorage.getItem(
+            "programmed-metronome"
+        );
+
+    if (!saved)
+        return false;
+
+    try {
+
+        programmedData =
+            JSON.parse(saved);
+
+        if (
+            !programmedData.length
+        ) {
+            return false;
+        }
+
+        programmedEnabled =
+            true;
+
+        currentStep = 0;
+
+        currentStepStartMeasure =
+            metroMeasure;
+
+        applyProgrammedStep(0);
+
+        document
+        .getElementById(
+            "programmed-float"
+        )
+        ?.style.setProperty(
+            "display",
+            "block"
+        );
+
+        return true;
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        return false;
+
+    }
+
+}
+
+/* ==================================
+   APPLY STEP
+================================== */
+
+function applyProgrammedStep(index) {
+
+    const step =
+        programmedData[index];
+
+    if (!step)
+        return;
+
+    const bpm =
+        document.getElementById(
+            "bpm"
+        );
+
+    const beats =
+        document.getElementById(
+            "beats"
+        );
+
+    if (bpm) {
+
+        bpm.value =
+            step.bpm;
+
+    }
+
+    if (beats) {
+
+        beats.value =
+            step.signature;
+
+    }
+
+    updateProgrammedFloat();
+
+}
+
+/* ==================================
+   FLOAT
+================================== */
+
+function updateProgrammedFloat() {
+
+    if(
+        !programmedEnabled
+    ){
+        return;
+    }
+
+    const step =
+        programmedData[
+            currentStep
+        ];
+
+    if(!step)
+        return;
+
+    const next =
+        programmedData[
+            currentStep + 1
+        ];
+
+    document
+    .getElementById(
+        "pm-step"
+    )
+    .textContent =
+        `STEP ${
+            currentStep + 1
+        }`;
+
+    document
+    .getElementById(
+        "pm-signature"
+    )
+    .textContent =
+        step.signature;
+
+    document
+    .getElementById(
+        "pm-next"
+    )
+    .textContent =
+        next
+        ? `次 → BPM ${next.bpm}`
+        : "終了";
+
+    const remain =
+        Math.max(
+            0,
+            step.measures -
+            (
+                metroMeasure -
+                currentStepStartMeasure
+            )
+        );
+
+    document
+    .getElementById(
+        "pm-remain"
+    )
+    .textContent =
+        `残り ${remain} 小節`;
+
+}
+
+/* ==================================
+   STEP CHECK
+================================== */
+
+function updateProgrammedFloat() {
+
+    if (!programmedEnabled) return;
+
+    const step = programmedData[currentStep];
+    if (!step) return;
+
+    const next = programmedData[currentStep + 1];
+
+    document.getElementById("pm-step").textContent =
+        `STEP ${currentStep + 1}`;
+
+    document.getElementById("pm-signature").textContent =
+        step.signature;
+
+    document.getElementById("pm-next").textContent =
+        next ? `次 → BPM ${next.bpm}` : "終了";
+
+    const remain = Math.max(
+        0,
+        step.measures -
+        (metroMeasure - currentStepStartMeasure)
+    );
+
+    document.getElementById("pm-remain").textContent =
+        `残り ${remain} 小節`;
+}
+
+/* =========================
+   STEP CHECK
+========================= */
+
+function checkProgrammedMetronome() {
+
+    if (!programmedEnabled) return;
+
+    const step = programmedData[currentStep];
+    if (!step) return;
+
+    const passedMeasures =
+        metroMeasure - currentStepStartMeasure;
+
+    if (passedMeasures >= step.measures) {
+
+        currentStep++;
+
+        if (currentStep >= programmedData.length) {
+
+            programmedEnabled = false;
+            programmedData = [];
+
+            localStorage.removeItem("programmed-metronome");
+
+            document
+                .getElementById("programmed-float")
+                ?.style.setProperty("display", "none");
+
+            return;
+        }
+
+        currentStepStartMeasure = metroMeasure;
+
+        applyProgrammedStep(currentStep);
+    }
+
+    updateProgrammedFloat();
+}
+/* ==================================
+   TAB LOAD
+================================== */
+
+document
+.querySelector(
+    "[data-page='metronome']"
+)
+?.addEventListener(
+    "click",
+    loadProgrammedMetronome
+);
