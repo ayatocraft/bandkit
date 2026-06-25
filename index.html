@@ -101,79 +101,49 @@
 
     <!-- タブ -->
 
-    <nav id="tabs">
+    <!-- ========================= -->
+<!-- TAB -->
+<!-- ========================= -->
 
-        <button class="tab active" data-page="metronome">
+<nav id="tabs">
 
-            <span class="material-symbols-rounded">
-                timer
-            </span>
+    <button class="tab active" data-page="metronome">
+        <span class="material-symbols-rounded">timer</span>
+        <span>Metronome</span>
+    </button>
 
-            <span>Metronome</span>
+    <button class="tab" data-page="tuner">
+        <span class="material-symbols-rounded">tune</span>
+        <span>Tuner</span>
+    </button>
 
-        </button>
+    <button class="tab" data-page="pitch">
+        <span class="material-symbols-rounded">graphic_eq</span>
+        <span>Pitch</span>
+    </button>
 
-        <button class="tab" data-page="tuner">
+    <button class="tab" data-page="piano">
+        <span class="material-symbols-rounded">piano</span>
+        <span>Piano</span>
+    </button>
 
-            <span class="material-symbols-rounded">
-                tune
-            </span>
+    <!-- ✅ SCORE（iframe化対応） -->
+    <button class="tab" data-page="score">
+        <span class="material-symbols-rounded">timer</span>
+        <span>Programmed Metronome</span>
+    </button>
 
-            <span>Tuner</span>
+    <button class="tab" data-page="noise">
+        <span class="material-symbols-rounded">mic</span>
+        <span>Noise</span>
+    </button>
 
-        </button>
+    <button class="tab" data-page="settings">
+        <span class="material-symbols-rounded">settings</span>
+        <span>Settings</span>
+    </button>
 
-        <button class="tab" data-page="pitch">
-
-            <span class="material-symbols-rounded">
-                graphic_eq
-            </span>
-
-            <span>Pitch</span>
-
-        </button>
-
-        <button class="tab" data-page="piano">
-
-            <span class="material-symbols-rounded">
-                piano
-            </span>
-
-            <span>Piano</span>
-
-        </button>
-
-        <button class="tab" data-page="score" disabled>
-
-            <span class="material-symbols-rounded">
-                close
-            </span>
-
-            <span>Disabled</span>
-
-        </button>
-
-        <button class="tab" data-page="noise">
-
-            <span class="material-symbols-rounded">
-                mic
-            </span>
-
-            <span>Noise</span>
-
-        </button>
-
-        <button class="tab" data-page="settings">
-
-            <span class="material-symbols-rounded">
-                settings
-            </span>
-
-            <span>Settings</span>
-
-        </button>
-
-    </nav>
+</nav>
 
     <!-- コンテンツ -->
 
@@ -186,7 +156,38 @@
         <section
             id="page-metronome"
             class="page active">
+<div
+id="programmed-float"
+style="
+display:none;
+position:fixed;
+right:20px;
+bottom:20px;
+z-index:9999;
+background:#111;
+color:white;
+padding:12px;
+border-radius:12px;
+min-width:220px;
+">
 
+<div id="pm-step">
+STEP 1
+</div>
+
+<div id="pm-signature">
+4/4
+</div>
+
+<div id="pm-next">
+次 → BPM 120
+</div>
+
+<div id="pm-remain">
+残り 0 小節
+</div>
+
+</div>
             <div class="card">
 
                 <h2>Metronome</h2>
@@ -336,36 +337,28 @@
         </section>
 
         <!-- ================= -->
-        <!-- Music Score -->
-        <!-- ================= -->
+<!-- SCORE -->
+<!-- ================= -->
 
-        <section
-            id="page-score"
-            class="page">
+<section
+    id="page-score"
+    class="page">
 
-            <div class="card">
+    <div class="card iframe-card">
 
-                <h2>Music Score</h2>
+        <h2>Programmed Metronome</h2>
 
-                <div class="score-modes">
+        
 
-                    <button>
-                        Read Score
-                    </button>
+        <iframe
+            id="score-frame"
+            src="score.html"
+            title="Score Viewer">
+        </iframe>
 
-                    <button>
-                        MIDI to Score
-                    </button>
+    </div>
 
-                    <button>
-                        Player
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
+</section>
 
         <!-- ================= -->
         <!-- Noise -->
