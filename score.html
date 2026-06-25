@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>
+Programmed Metronome
+</title>
+
+<style>
+
+body{
+
+    font-family:
+    "Segoe UI",
+    sans-serif;
+
+    margin:0;
+    padding:20px;
+
+    background:#f5f5f5;
+
+}
+
+h1{
+
+    margin-top:0;
+
+}
+
+#steps{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.step{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:16px;
+
+    box-shadow:
+    0 2px 6px
+    rgba(0,0,0,.15);
+
+}
+
+.row{
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+input,
+select{
+
+    padding:8px;
+
+}
+
+button{
+
+    padding:10px 16px;
+
+    cursor:pointer;
+
+}
+
+#toolbar{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>
+Programmed Metronome
+</h1>
+
+<div id="toolbar">
+
+<button id="add-step">
+＋ STEP追加
+</button>
+
+<button id="save">
+メトロノームへ送信
+</button>
+
+</div>
+
+<div id="steps"></div>
+
+<script>
+
+let steps = [
+
+{
+    measures:8,
+    bpm:120,
+    signature:"4/4"
+}
+
+];
+
+function render(){
+
+    const root =
+        document.getElementById(
+            "steps"
+        );
+
+    root.innerHTML = "";
+
+    steps.forEach(
+    (step,index)=>{
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "step";
+
+        div.innerHTML = `
+
+        <h3>
+        STEP ${index+1}
+        </h3>
+
+        <div class="row">
+
+            <label>
+
+            小節数
+
+            <input
+            type="number"
+            min="1"
+            value="${step.measures}"
+
+            onchange="
+            steps[${index}].measures=
+            parseInt(this.value)||1
+            ">
+
+            </label>
+
+            <label>
+
+            BPM
+
+            <input
+            type="number"
+            min="20"
+            max="300"
+
+            value="${step.bpm}"
+
+            onchange="
+            steps[${index}].bpm=
+            parseInt(this.value)||120
+            ">
+
+            </label>
+
+            <label>
+
+            拍子
+
+            <select
+            onchange="
+            steps[${index}].signature=
+            this.value
+            ">
+
+                <option
+                ${step.signature==="4/4"?"selected":""}>
+                4/4
+                </option>
+
+                <option
+                ${step.signature==="3/4"?"selected":""}>
+                3/4
+                </option>
+
+                <option
+                ${step.signature==="2/4"?"selected":""}>
+                2/4
+                </option>
+
+                <option
+                ${step.signature==="6/8"?"selected":""}>
+                6/8
+                </option>
+
+            </select>
+
+            </label>
+
+        </div>
+
+        <br>
+
+        <button
+        onclick="
+        removeStep(${index})
+        ">
+
+        削除
+
+        </button>
+
+        `;
+
+        root.appendChild(
+            div
+        );
+
+    });
+
+}
+
+function removeStep(index){
+
+    if(
+        steps.length <= 1
+    ){
+        return;
+    }
+
+    steps.splice(
+        index,
+        1
+    );
+
+    render();
+
+}
+
+document
+.getElementById(
+    "add-step"
+)
+.addEventListener(
+"click",
+()=>{
+
+    steps.push({
+
+        measures:8,
+        bpm:120,
+        signature:"4/4"
+
+    });
+
+    render();
+
+}
+);
+
+document
+.getElementById(
+    "save"
+)
+.addEventListener(
+"click",
+()=>{
+
+    localStorage.setItem(
+
+        "programmed-metronome",
+
+        JSON.stringify(
+            steps
+        )
+
+    );
+
+    alert(
+        "保存しました"
+    );
+
+}
+);
+
+render();
+
+</script>
+
+</body>
+</html>
